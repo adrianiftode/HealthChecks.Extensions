@@ -46,26 +46,46 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IHealthChecksBuilder CheckOnlyWhen(this IHealthChecksBuilder builder, string name, Func<IServiceProvider, bool> predicate)
             => builder.CheckOnlyWhen(name, (sp, _) => Task.FromResult(predicate(sp)));
 
-        // no overload for HC as it introduces ambiguity with IServiceProvider overloads, so it will introduce a burden degree on client side
-        //public static IHealthChecksBuilder CheckOnlyWhen(this IHealthChecksBuilder builder, string name, Func<HealthCheckContext, Task<bool>> predicate)
-        //  => builder.CheckOnlyWhen(name, (_, hc) => predicate(hc));
+        public static IHealthChecksBuilder CheckOnlyWhen(this IHealthChecksBuilder builder, string name, bool whenCondition)
+            => builder.CheckOnlyWhen(name, (_, __) => Task.FromResult(whenCondition));
 
-        //public static IHealthChecksBuilder CheckOnlyWhen(this IHealthChecksBuilder builder, string name, Func<HealthCheckContext, bool> predicate)
-        //   => builder.CheckOnlyWhen(name, (_, hc) => Task.FromResult(predicate(hc)));
+        public static IHealthChecksBuilder CheckOnlyWhen<T>(this IHealthChecksBuilder builder, string name, Func<IServiceProvider, HealthCheckContext, Task<T>> policyProvider)
+            where T : IConditionalHealthCheckPolicy
+            => builder.CheckOnlyWhen(name, async (sp, context) =>
+            {
+                var policy = await policyProvider(sp, context);
+
+                if (policy == null)
+                {
+                    throw new InvalidOperationException($"A policy of type `{name}` is not found in the health registrations list, so its conditional check cannot be configured. The registration must be added before configuring the conditional predicate.");
+                }
+
+                return await policy.Evaluate(context);
+            });
 
         public static IHealthChecksBuilder CheckOnlyWhen<T>(this IHealthChecksBuilder builder, string name)
             where T : IConditionalHealthCheckPolicy
-           => builder.CheckOnlyWhen(name, async (sp, context) =>
-           {
-               var policy = sp.GetService<T>();
+            => builder.CheckOnlyWhen(name, (sp, _) => Task.FromResult(sp.GetService<T>()));
 
-               if (policy == null)
-               {
-                   throw new InvalidOperationException($"A policy of type `{name}` is not found in the health registrations list, so its conditional check cannot be configured. The registration must be added before configuring the conditional predicate.");
-               }
+        public static IHealthChecksBuilder CheckOnlyWhen<T>(this IHealthChecksBuilder builder, string name, T policy)
+            where T : IConditionalHealthCheckPolicy
+            => builder.CheckOnlyWhen(name, (_, __) => Task.FromResult(policy));
 
-               return await policy.Evaluate(context);
-           });
+        public static IHealthChecksBuilder CheckOnlyWhen<T>(this IHealthChecksBuilder builder, string name, Func<T> policyProvider)
+            where T : IConditionalHealthCheckPolicy
+            => builder.CheckOnlyWhen(name, (_, __) => Task.FromResult(policyProvider()));
+
+        public static IHealthChecksBuilder CheckOnlyWhen<T>(this IHealthChecksBuilder builder, string name, Func<Task<T>> policyProvider)
+            where T : IConditionalHealthCheckPolicy
+            => builder.CheckOnlyWhen(name, (_, __) => policyProvider());
+
+        public static IHealthChecksBuilder CheckOnlyWhen<T>(this IHealthChecksBuilder builder, string name, Func<IServiceProvider, T> policyProvider)
+            where T : IConditionalHealthCheckPolicy
+            => builder.CheckOnlyWhen(name, (sp, __) => Task.FromResult(policyProvider(sp)));
+
+        public static IHealthChecksBuilder CheckOnlyWhen<T>(this IHealthChecksBuilder builder, string name, Func<IServiceProvider, Task<T>> policyProvider)
+            where T : IConditionalHealthCheckPolicy
+            => builder.CheckOnlyWhen(name, (sp, __) => policyProvider(sp));
     }
 
     public interface IConditionalHealthCheckPolicy
