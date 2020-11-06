@@ -1,11 +1,10 @@
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Diagnostics.HealthChecks;
-using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.Extensions.Options;
-using Moq;
-using System;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
+using FluentAssertions;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Logging;
+using Moq;
 using Xunit;
 
 namespace AspNetCore.Diagnostics.HealthChecks.Extensions.Tests
@@ -13,71 +12,146 @@ namespace AspNetCore.Diagnostics.HealthChecks.Extensions.Tests
     public class ConditionalHealthCheckTests
     {
         [Fact]
-        public async Task Api()
+        public void Ctor_Logger_Is_Optional()
         {
-            var serviceCollection = new ServiceCollection();
+            // Arrange
+            Action act = () => new ConditionalHealthCheck(() => null, (_, __) => null,logger: null);
 
-            serviceCollection.AddHealthChecks()
-                .AddCheck("Test0", () => HealthCheckResult.Unhealthy())
-                    .CheckOnlyWhen("Test0", true);
-
-            serviceCollection.AddHealthChecks()
-                .AddCheck("Test1", () => HealthCheckResult.Unhealthy())
-                    .CheckOnlyWhen("Test1", () => true);
-
-            serviceCollection.AddHealthChecks()
-                .AddCheck("Test2", () => HealthCheckResult.Unhealthy())
-                    .CheckOnlyWhen("Test2", sp => true);
-
-            serviceCollection.AddHealthChecks()
-               .AddCheck("Test3", () => HealthCheckResult.Unhealthy())
-                   .CheckOnlyWhen("Test3", async sp => await Task.FromResult(true));
-
-            serviceCollection.AddHealthChecks()
-                .AddCheck("Test4", () => HealthCheckResult.Unhealthy())
-                    .CheckOnlyWhen("Test4", (sp, context) => true);
-
-            serviceCollection.AddHealthChecks()
-                .AddCheck("Test5", () => HealthCheckResult.Unhealthy())
-                    .CheckOnlyWhen("Test5", async (sp, context) => await Task.FromResult(true));
-
-            serviceCollection.AddHealthChecks()
-               .AddCheck("Test6", () => HealthCheckResult.Unhealthy())
-                   .CheckOnlyWhen<SomePolicy>("Test6");
-
-            serviceCollection.AddHealthChecks()
-               .AddCheck("Test7", () => HealthCheckResult.Unhealthy())
-                   .CheckOnlyWhen("Test7", new SomeParametrizedPolicy("Some variation"));
-
-            serviceCollection.AddHealthChecks()
-               .AddCheck("Test8", () => HealthCheckResult.Unhealthy())
-                   .CheckOnlyWhen("Test8", () => new SomeParametrizedPolicy("Some variation"));
-
-            serviceCollection.AddHealthChecks()
-               .AddCheck("Test9", () => HealthCheckResult.Unhealthy())
-                   .CheckOnlyWhen("Test9", async sp => await Task.FromResult(new SomeParametrizedPolicy(variation: "Some variation")));
-
-            serviceCollection.AddHealthChecks()
-               .AddCheck("Test10", () => HealthCheckResult.Unhealthy())
-                   .CheckOnlyWhen("Test10", sp => new SomeParametrizedPolicy(variation: "Some variation"));
-
-            serviceCollection.AddHealthChecks()
-               .AddCheck("Test11", () => HealthCheckResult.Unhealthy())
-                   .CheckOnlyWhen("Test11", async (sp, context) => await Task.FromResult(new SomeParametrizedPolicy(variation: "Some variation")));
-
-            Assert.True(true);
+            // Act
+            act.Should().NotThrow();
         }
-    }
 
-    public class SomePolicy : IConditionalHealthCheckPolicy
-    {
-        public Task<bool> Evaluate(HealthCheckContext context) => Task.FromResult(true);
-    }
+        [Fact]
+        public void Ctor_Health_Check_Factory_Is_Required()
+        {
+            // Arrange
+            Action act = () => new ConditionalHealthCheck(null!, (_, __) => null, null);
 
-    public class SomeParametrizedPolicy : IConditionalHealthCheckPolicy
-    {
-        private readonly string _variation;
-        public SomeParametrizedPolicy(string variation) => _variation = variation;
-        public Task<bool> Evaluate(HealthCheckContext context) => Task.FromResult(true);
+            // Act
+            act.Should().ThrowExactly<ArgumentNullException>()
+                .And.ParamName.Should().Be("healthCheckFactory");
+        }
+
+        [Fact]
+        public void Ctor_Health_Predicate_Is_Required()
+        {
+            // Arrange
+            Action act = () => new ConditionalHealthCheck(() => null, null!, logger: null);
+
+            // Act
+            act.Should().ThrowExactly<ArgumentNullException>()
+                .And.ParamName.Should().Be("predicate");
+        }
+
+        [Fact]
+        public async Task OriginalHealthCheck_Is_Executed_When_ThePredicate_Returns_True()
+        {
+            // Arrange
+            var decoratedHealthCheckMock = new Mock<IHealthCheck>();
+            var sut = new ConditionalHealthCheck(() => decoratedHealthCheckMock.Object, (_, __) => Task.FromResult(true), null);
+
+            // Act
+            await sut.CheckHealthAsync(new HealthCheckContextBuilder().WithInstance(decoratedHealthCheckMock.Object)
+                .Build());
+
+            // Assert
+            decoratedHealthCheckMock.Verify(c => c.CheckHealthAsync(It.IsAny<HealthCheckContext>(), It.IsAny<CancellationToken>()), Times.Once);
+        }
+
+        [Fact]
+        public async Task OriginalHealthCheck_Is_Not_Executed_When_ThePredicate_Returns_False()
+        {
+            // Arrange
+            var decoratedHealthCheckMock = new Mock<IHealthCheck>();
+            var sut = new ConditionalHealthCheck(() => decoratedHealthCheckMock.Object, (_, __) => Task.FromResult(false), null);
+
+            // Act
+            await sut.CheckHealthAsync(new HealthCheckContextBuilder().WithInstance(decoratedHealthCheckMock.Object)
+                .Build());
+
+            // Assert
+            decoratedHealthCheckMock.Verify(c => c.CheckHealthAsync(It.IsAny<HealthCheckContext>(), It.IsAny<CancellationToken>()), Times.Never);
+        }
+
+        [Fact]
+        public async Task Context_Contains_NotChecked_Tag_When_The_Original_Check_Is_Not_Executed()
+        {
+            // Arrange
+            var decoratedHealthCheckMock = new Mock<IHealthCheck>();
+            var sut = new ConditionalHealthCheck(() => decoratedHealthCheckMock.Object, (_, __) => Task.FromResult(false), null);
+            var context = new HealthCheckContextBuilder().WithInstance(decoratedHealthCheckMock.Object)
+                .Build();
+
+            // Act
+            await sut.CheckHealthAsync(context);
+
+            // Assert
+            context.Registration.Tags.Should().Contain("NotChecked");
+        }
+
+        [Fact]
+        public async Task Context_Does_Not_Contain_NotChecked_Tag_When_The_Original_Check_Is_Executed()
+        {
+            // Arrange
+            var decoratedHealthCheckMock = new Mock<IHealthCheck>();
+            var sut = new ConditionalHealthCheck(() => decoratedHealthCheckMock.Object, (_, __) => Task.FromResult(true), null);
+            var context = new HealthCheckContextBuilder().WithInstance(decoratedHealthCheckMock.Object)
+                .Build();
+
+            // Act
+            await sut.CheckHealthAsync(context);
+
+            // Assert
+            context.Registration.Tags.Should().NotContain("NotChecked");
+        }
+
+        [Fact]
+        public async Task Result_Has_A_Meaningful_Description()
+        {
+            // Arrange
+            var decoratedHealthCheckMock = new Mock<IHealthCheck>();
+            var sut = new ConditionalHealthCheck(() => decoratedHealthCheckMock.Object, (_, __) => Task.FromResult(false), null);
+            var context = new HealthCheckContextBuilder().WithInstance(decoratedHealthCheckMock.Object)
+                .Build();
+
+            // Act
+            var result = await sut.CheckHealthAsync(context);
+
+            // Assert
+            result.Description.Should().Match("*`TheCheck` will not be evaluated*");
+        }
+
+        [Fact]
+        public async Task Result_Is_Healthy()
+        {
+            // Arrange
+            var decoratedHealthCheckMock = new Mock<IHealthCheck>();
+            var sut = new ConditionalHealthCheck(() => decoratedHealthCheckMock.Object, (_, __) => Task.FromResult(false), null);
+            var context = new HealthCheckContextBuilder().WithInstance(decoratedHealthCheckMock.Object)
+                .Build();
+
+            // Act
+            var result = await sut.CheckHealthAsync(context);
+
+            // Assert
+            result.Status.Should().Be(HealthStatus.Healthy);
+        }
+
+        [Fact]
+        public async Task Logs_a_Debug_Message_When_The_Original_Health_Check_Is_Not_Executed()
+        {
+            // Arrange
+            var decoratedHealthCheckMock = new Mock<IHealthCheck>();
+            var loggerMock = new Mock<ILogger<ConditionalHealthCheck>>();
+            var sut = new ConditionalHealthCheck(() => decoratedHealthCheckMock.Object, (_, __) => Task.FromResult(false), loggerMock.Object);
+            var context = new HealthCheckContextBuilder().WithInstance(decoratedHealthCheckMock.Object)
+                .Build();
+
+            // Act
+            await sut.CheckHealthAsync(context);
+
+            // Assert
+            loggerMock.VerifyLog(logger => logger.LogDebug("HealthCheck `TheCheck` will not be executed as its checking condition is not met."));
+        }
     }
 }
