@@ -33,7 +33,7 @@ namespace AspNetCore.Diagnostics.HealthChecks.Extensions
 
                 context.Registration.Tags.Add(_options.NotCheckedTagName);
 
-                return new HealthCheckResult(_options.HealthStatus, $"Health check on `{context.Registration.Name}` will not be evaluated " +
+                return new HealthCheckResult(_options.HealthStatusWhenNotChecked, $"Health check on `{context.Registration.Name}` will not be evaluated " +
                     "as its checking condition is not met. This does not mean your dependency is healthy, " +
                     "but the health check operation on this dependency is not configured to be executed yet.");
             }

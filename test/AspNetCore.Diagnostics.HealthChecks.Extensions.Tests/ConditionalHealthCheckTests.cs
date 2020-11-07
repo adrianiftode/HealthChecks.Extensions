@@ -173,7 +173,7 @@ namespace AspNetCore.Diagnostics.HealthChecks.Extensions.Tests
             var decoratedHealthCheckMock = new Mock<IHealthCheck>();
             var sut = new ConditionalHealthCheck(() => decoratedHealthCheckMock.Object, (_, __) => Task.FromResult(false), new ConditionalHealthOptions
             {
-                HealthStatus = HealthStatus.Degraded
+                HealthStatusWhenNotChecked = HealthStatus.Degraded
             }, null);
             var context = new HealthCheckContextBuilder().WithInstance(decoratedHealthCheckMock.Object)
                 .Build();

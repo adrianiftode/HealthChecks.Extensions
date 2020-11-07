@@ -116,11 +116,11 @@ namespace AspNetCore.Diagnostics.HealthChecks.Extensions.Tests.Functional
                 {
                     services.AddHealthChecks()
                         .AddCheck("ThisPolicyShouldNotBeChecked", () => HealthCheckResult.Healthy())
-                            .CheckOnlyWhen<CheckOrNotCheckPolicy>("ThisPolicyShouldNotBeChecked", false)
+                            .CheckOnlyWhen<CheckOrNotCheckPolicy>("ThisPolicyShouldNotBeChecked", default, conditionalHealthCheckPolicyArgs: false)
                         .AddCheck("ThisPolicyShouldBeChecked", () => HealthCheckResult.Healthy())
-                            .CheckOnlyWhen<CheckOrNotCheckPolicy>("ThisPolicyShouldBeChecked", true)
+                            .CheckOnlyWhen<CheckOrNotCheckPolicy>("ThisPolicyShouldBeChecked", default, conditionalHealthCheckPolicyArgs: true)
                         .AddCheck("AlsoThisPolicyShouldNotBeChecked", () => HealthCheckResult.Healthy())
-                            .CheckOnlyWhen<CheckOrNotCheckPolicy>("AlsoThisPolicyShouldNotBeChecked", false);
+                            .CheckOnlyWhen<CheckOrNotCheckPolicy>("AlsoThisPolicyShouldNotBeChecked", default, conditionalHealthCheckPolicyArgs: false);
                 })
                 .Configure(app =>
                 {

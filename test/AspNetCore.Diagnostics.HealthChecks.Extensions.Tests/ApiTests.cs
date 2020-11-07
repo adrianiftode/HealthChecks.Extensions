@@ -81,6 +81,10 @@ namespace AspNetCore.Diagnostics.HealthChecks.Extensions.Tests
                         .CheckOnlyWhen("Test14",
                         async (sp, context, token) =>
                             await Task.FromResult(new SomeParametrizedPolicy(variation: "Some variation")));
+
+                serviceCollection.AddHealthChecks()
+                    .AddCheck("Test15", () => HealthCheckResult.Unhealthy())
+                        .CheckOnlyWhen("Test15", true, new ConditionalHealthOptions { HealthStatusWhenNotChecked = HealthStatus.Degraded });
             };
 
             act.Should().NotThrow();
