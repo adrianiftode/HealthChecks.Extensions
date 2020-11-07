@@ -28,7 +28,6 @@ namespace AspNetCore.Diagnostics.HealthChecks.Extensions.Tests.Functional
                 {
                     app.UseHealthChecks("/health", new HealthCheckOptions
                     {
-                        Predicate = r => r.Tags.Contains("ThatCheck"),
                         ResponseWriter = ResponseWriter.WriteResponse
                     });
                 });
@@ -51,7 +50,7 @@ namespace AspNetCore.Diagnostics.HealthChecks.Extensions.Tests.Functional
                             tags = new string[] { }
                         }
                     }
-                }, model =>
+                }, assertion: model =>
                 {
                     model.entries.Should().Contain(entry => entry.name == "TheCheck");
                 });
@@ -73,7 +72,6 @@ namespace AspNetCore.Diagnostics.HealthChecks.Extensions.Tests.Functional
                 {
                     app.UseHealthChecks("/health", new HealthCheckOptions
                     {
-                        Predicate = r => r.Tags.Contains("ThatCheck"),
                         ResponseWriter = ResponseWriter.WriteResponse
                     });
                 });
@@ -97,7 +95,7 @@ namespace AspNetCore.Diagnostics.HealthChecks.Extensions.Tests.Functional
                             tags = new string[] { }
                         }
                     }
-                }, model =>
+                }, assertion: model =>
                 {
                     model.entries.Should()
                         .NotBeNullOrEmpty()
@@ -106,6 +104,62 @@ namespace AspNetCore.Diagnostics.HealthChecks.Extensions.Tests.Functional
                     result.tags.Should().Contain("NotChecked");
                     result.description.Should().Match("*check on `TheCheck` will not be evaluated*");
                 });
+        }
+
+        [Fact]
+        public async Task Checks_According_To_The_ConditionalHealthCheckPolicy()
+        {
+            // Arrange
+            var webHostBuilder = new WebHostBuilder()
+                .UseStartup<DefaultStartup>()
+                .ConfigureServices(services =>
+                {
+                    services.AddHealthChecks()
+                        .AddCheck("ThisPolicyShouldNotBeChecked", () => HealthCheckResult.Healthy())
+                            .CheckOnlyWhen<CheckOrNotCheckPolicy>("ThisPolicyShouldNotBeChecked", false)
+                        .AddCheck("ThisPolicyShouldBeChecked", () => HealthCheckResult.Healthy())
+                            .CheckOnlyWhen<CheckOrNotCheckPolicy>("ThisPolicyShouldBeChecked", true)
+                        .AddCheck("AlsoThisPolicyShouldNotBeChecked", () => HealthCheckResult.Healthy())
+                            .CheckOnlyWhen<CheckOrNotCheckPolicy>("AlsoThisPolicyShouldNotBeChecked", false);
+                })
+                .Configure(app =>
+                {
+                    app.UseHealthChecks("/health", new HealthCheckOptions
+                    {
+                        ResponseWriter = ResponseWriter.WriteResponse
+                    });
+                });
+
+            var server = new TestServer(webHostBuilder);
+
+            // Act
+            var response = await server.CreateRequest("/health").GetAsync();
+
+            // Assert
+            response.Should().Satisfy(givenModelStructure: new
+                {
+                    entries = new[]
+                    {
+                        new
+                        {
+                            tags = new string[] { }
+                        }
+                    }
+                }, assertion: model =>
+                {
+                    model.entries.Should().SatisfyRespectively(
+                        firstPolicy => firstPolicy.tags.Should().Contain("NotChecked"),
+                        secondPolicy => secondPolicy.tags.Should().NotContain("NotChecked"),
+                        thirdPolicy => thirdPolicy.tags.Should().Contain("NotChecked"));
+                });
+        }
+
+        internal class CheckOrNotCheckPolicy : IConditionalHealthCheckPolicy
+        {
+            private readonly bool _evaluate;
+
+            public CheckOrNotCheckPolicy(bool evaluate) => _evaluate = evaluate;
+            public Task<bool> Evaluate(HealthCheckContext context) => Task.FromResult(_evaluate);
         }
     }
 }

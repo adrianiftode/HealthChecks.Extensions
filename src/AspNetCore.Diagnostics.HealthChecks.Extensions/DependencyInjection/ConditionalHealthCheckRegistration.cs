@@ -64,9 +64,9 @@ namespace Microsoft.Extensions.DependencyInjection
                 return await policy.Evaluate(context);
             });
 
-        public static IHealthChecksBuilder CheckOnlyWhen<T>(this IHealthChecksBuilder builder, string name)
+        public static IHealthChecksBuilder CheckOnlyWhen<T>(this IHealthChecksBuilder builder, string name, params object[] args)
             where T : IConditionalHealthCheckPolicy
-            => builder.CheckOnlyWhen(name, (sp, _, __) => Task.FromResult(sp.GetService<T>()));
+            => builder.CheckOnlyWhen(name, (sp, _, __) => Task.FromResult(ActivatorUtilities.CreateInstance<T>(sp, args)));
 
         public static IHealthChecksBuilder CheckOnlyWhen<T>(this IHealthChecksBuilder builder, string name, T policy)
             where T : IConditionalHealthCheckPolicy
