@@ -1,15 +1,20 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26124.0
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30611.23
 MinimumVisualStudioVersion = 15.0.26124.0
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{240534D9-E181-49E0-B38A-6EA328B71972}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AspNetCore.Diagnostics.HealthChecks.Extensions", "src\AspNetCore.Diagnostics.HealthChecks.Extensions\AspNetCore.Diagnostics.HealthChecks.Extensions.csproj", "{085458F3-2852-4383-871C-1F883174460D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AspNetCore.Diagnostics.HealthChecks.Extensions", "src\AspNetCore.Diagnostics.HealthChecks.Extensions\AspNetCore.Diagnostics.HealthChecks.Extensions.csproj", "{085458F3-2852-4383-871C-1F883174460D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{623BFCC8-4018-42B3-B221-E2957829AEFB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AspNetCore.Diagnostics.HealthChecks.Extensions.Tests", "test\AspNetCore.Diagnostics.HealthChecks.Extensions.Tests\AspNetCore.Diagnostics.HealthChecks.Extensions.Tests.csproj", "{BDAD8F0E-9584-4083-B3C6-82EAAC0498EE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AspNetCore.Diagnostics.HealthChecks.Extensions.Tests", "test\AspNetCore.Diagnostics.HealthChecks.Extensions.Tests\AspNetCore.Diagnostics.HealthChecks.Extensions.Tests.csproj", "{BDAD8F0E-9584-4083-B3C6-82EAAC0498EE}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{3845B1F6-3DF8-49BE-8A93-C92BE056DBFC}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -19,9 +24,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 		Release|x64 = Release|x64
 		Release|x86 = Release|x86
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{085458F3-2852-4383-871C-1F883174460D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -49,8 +51,14 @@ Global
 		{BDAD8F0E-9584-4083-B3C6-82EAAC0498EE}.Release|x86.ActiveCfg = Release|Any CPU
 		{BDAD8F0E-9584-4083-B3C6-82EAAC0498EE}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{085458F3-2852-4383-871C-1F883174460D} = {240534D9-E181-49E0-B38A-6EA328B71972}
 		{BDAD8F0E-9584-4083-B3C6-82EAAC0498EE} = {623BFCC8-4018-42B3-B221-E2957829AEFB}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B4F0CB1E-4745-44C2-B92E-F8797A9EDF18}
 	EndGlobalSection
 EndGlobal
