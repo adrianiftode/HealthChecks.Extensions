@@ -24,7 +24,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 var factory = registration.Factory;
                 registration.Factory = sp => new ConditionalHealthCheck(
                        () => factory(sp),
-                       (context, token) => predicate(sp, context, token),
+                       (context, token) => predicate(sp, context, token), null,
                        sp.GetService<ILogger<ConditionalHealthCheck>>()
                    );
             });

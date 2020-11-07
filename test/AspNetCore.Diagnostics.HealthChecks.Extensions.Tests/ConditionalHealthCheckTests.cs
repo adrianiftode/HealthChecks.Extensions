@@ -15,7 +15,17 @@ namespace AspNetCore.Diagnostics.HealthChecks.Extensions.Tests
         public void Ctor_Logger_Is_Optional()
         {
             // Arrange
-            Action act = () => new ConditionalHealthCheck(() => null, (_, __) => null,logger: null);
+            Action act = () => new ConditionalHealthCheck(() => null, (_, __) => null, null,logger: null);
+
+            // Act
+            act.Should().NotThrow();
+        }
+
+        [Fact]
+        public void Ctor_Options_Are_Optional()
+        {
+            // Arrange
+            Action act = () => new ConditionalHealthCheck(() => null, (_, __) => null, options:null, null);
 
             // Act
             act.Should().NotThrow();
@@ -25,7 +35,7 @@ namespace AspNetCore.Diagnostics.HealthChecks.Extensions.Tests
         public void Ctor_Health_Check_Factory_Is_Required()
         {
             // Arrange
-            Action act = () => new ConditionalHealthCheck(null!, (_, __) => null, null);
+            Action act = () => new ConditionalHealthCheck(null!, (_, __) => null, null, null);
 
             // Act
             act.Should().ThrowExactly<ArgumentNullException>()
@@ -36,7 +46,7 @@ namespace AspNetCore.Diagnostics.HealthChecks.Extensions.Tests
         public void Ctor_Health_Predicate_Is_Required()
         {
             // Arrange
-            Action act = () => new ConditionalHealthCheck(() => null, null!, logger: null);
+            Action act = () => new ConditionalHealthCheck(() => null, null!, null, null);
 
             // Act
             act.Should().ThrowExactly<ArgumentNullException>()
@@ -48,7 +58,7 @@ namespace AspNetCore.Diagnostics.HealthChecks.Extensions.Tests
         {
             // Arrange
             var decoratedHealthCheckMock = new Mock<IHealthCheck>();
-            var sut = new ConditionalHealthCheck(() => decoratedHealthCheckMock.Object, (_, __) => Task.FromResult(true), null);
+            var sut = new ConditionalHealthCheck(() => decoratedHealthCheckMock.Object, (_, __) => Task.FromResult(true), null, null);
 
             // Act
             await sut.CheckHealthAsync(new HealthCheckContextBuilder().WithInstance(decoratedHealthCheckMock.Object)
@@ -63,7 +73,7 @@ namespace AspNetCore.Diagnostics.HealthChecks.Extensions.Tests
         {
             // Arrange
             var decoratedHealthCheckMock = new Mock<IHealthCheck>();
-            var sut = new ConditionalHealthCheck(() => decoratedHealthCheckMock.Object, (_, __) => Task.FromResult(false), null);
+            var sut = new ConditionalHealthCheck(() => decoratedHealthCheckMock.Object, (_, __) => Task.FromResult(false), null, null);
 
             // Act
             await sut.CheckHealthAsync(new HealthCheckContextBuilder().WithInstance(decoratedHealthCheckMock.Object)
@@ -78,7 +88,7 @@ namespace AspNetCore.Diagnostics.HealthChecks.Extensions.Tests
         {
             // Arrange
             var decoratedHealthCheckMock = new Mock<IHealthCheck>();
-            var sut = new ConditionalHealthCheck(() => decoratedHealthCheckMock.Object, (_, __) => Task.FromResult(false), null);
+            var sut = new ConditionalHealthCheck(() => decoratedHealthCheckMock.Object, (_, __) => Task.FromResult(false), null, null);
             var context = new HealthCheckContextBuilder().WithInstance(decoratedHealthCheckMock.Object)
                 .Build();
 
@@ -90,11 +100,30 @@ namespace AspNetCore.Diagnostics.HealthChecks.Extensions.Tests
         }
 
         [Fact]
+        public async Task Context_Contains_Given_Tag_When_The_Original_Check_Is_Not_Executed()
+        {
+            // Arrange
+            var decoratedHealthCheckMock = new Mock<IHealthCheck>();
+            var sut = new ConditionalHealthCheck(() => decoratedHealthCheckMock.Object, (_, __) => Task.FromResult(false), new ConditionalHealthOptions
+            {
+                NotCheckedTagName = "MyTag"
+            }, null);
+            var context = new HealthCheckContextBuilder().WithInstance(decoratedHealthCheckMock.Object)
+                .Build();
+
+            // Act
+            await sut.CheckHealthAsync(context);
+
+            // Assert
+            context.Registration.Tags.Should().Contain("MyTag");
+        }
+
+        [Fact]
         public async Task Context_Does_Not_Contain_NotChecked_Tag_When_The_Original_Check_Is_Executed()
         {
             // Arrange
             var decoratedHealthCheckMock = new Mock<IHealthCheck>();
-            var sut = new ConditionalHealthCheck(() => decoratedHealthCheckMock.Object, (_, __) => Task.FromResult(true), null);
+            var sut = new ConditionalHealthCheck(() => decoratedHealthCheckMock.Object, (_, __) => Task.FromResult(true), null, null);
             var context = new HealthCheckContextBuilder().WithInstance(decoratedHealthCheckMock.Object)
                 .Build();
 
@@ -110,7 +139,7 @@ namespace AspNetCore.Diagnostics.HealthChecks.Extensions.Tests
         {
             // Arrange
             var decoratedHealthCheckMock = new Mock<IHealthCheck>();
-            var sut = new ConditionalHealthCheck(() => decoratedHealthCheckMock.Object, (_, __) => Task.FromResult(false), null);
+            var sut = new ConditionalHealthCheck(() => decoratedHealthCheckMock.Object, (_, __) => Task.FromResult(false), null, null);
             var context = new HealthCheckContextBuilder().WithInstance(decoratedHealthCheckMock.Object)
                 .Build();
 
@@ -126,7 +155,7 @@ namespace AspNetCore.Diagnostics.HealthChecks.Extensions.Tests
         {
             // Arrange
             var decoratedHealthCheckMock = new Mock<IHealthCheck>();
-            var sut = new ConditionalHealthCheck(() => decoratedHealthCheckMock.Object, (_, __) => Task.FromResult(false), null);
+            var sut = new ConditionalHealthCheck(() => decoratedHealthCheckMock.Object, (_, __) => Task.FromResult(false), null, null);
             var context = new HealthCheckContextBuilder().WithInstance(decoratedHealthCheckMock.Object)
                 .Build();
 
@@ -138,12 +167,31 @@ namespace AspNetCore.Diagnostics.HealthChecks.Extensions.Tests
         }
 
         [Fact]
+        public async Task Result_Is_As_Set_In_Options()
+        {
+            // Arrange
+            var decoratedHealthCheckMock = new Mock<IHealthCheck>();
+            var sut = new ConditionalHealthCheck(() => decoratedHealthCheckMock.Object, (_, __) => Task.FromResult(false), new ConditionalHealthOptions
+            {
+                HealthStatus = HealthStatus.Degraded
+            }, null);
+            var context = new HealthCheckContextBuilder().WithInstance(decoratedHealthCheckMock.Object)
+                .Build();
+
+            // Act
+            var result = await sut.CheckHealthAsync(context);
+
+            // Assert
+            result.Status.Should().Be(HealthStatus.Degraded);
+        }
+
+        [Fact]
         public async Task Logs_a_Debug_Message_When_The_Original_Health_Check_Is_Not_Executed()
         {
             // Arrange
             var decoratedHealthCheckMock = new Mock<IHealthCheck>();
             var loggerMock = new Mock<ILogger<ConditionalHealthCheck>>();
-            var sut = new ConditionalHealthCheck(() => decoratedHealthCheckMock.Object, (_, __) => Task.FromResult(false), loggerMock.Object);
+            var sut = new ConditionalHealthCheck(() => decoratedHealthCheckMock.Object, (_, __) => Task.FromResult(false), null, loggerMock.Object);
             var context = new HealthCheckContextBuilder().WithInstance(decoratedHealthCheckMock.Object)
                 .Build();
 
