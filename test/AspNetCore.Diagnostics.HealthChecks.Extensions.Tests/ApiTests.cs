@@ -93,12 +93,6 @@ namespace AspNetCore.Diagnostics.HealthChecks.Extensions.Tests
 
                 serviceCollection.AddHealthChecks()
                     .AddCheck("Test18", () => HealthCheckResult.Unhealthy())
-                    .AddCheck("Test19", () => HealthCheckResult.Unhealthy())
-                    .AddCheck("Test20", () => HealthCheckResult.Unhealthy())
-                        .CheckOnlyWhen("Test18", "Test19", "Test20", (sp, context, token) => Task.FromResult(true));
-
-                serviceCollection.AddHealthChecks()
-                    .AddCheck("Test18", () => HealthCheckResult.Unhealthy())
                         .CheckOnlyWhen(Check.Redis, true);
             };
 
