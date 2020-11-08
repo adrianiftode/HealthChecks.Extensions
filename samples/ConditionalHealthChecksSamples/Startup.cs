@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using AspNetCore.Diagnostics.HealthChecks.Extensions;
 using ConditionalHealthChecksSamples.Helpers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
@@ -45,6 +46,17 @@ namespace ConditionalHealthChecksSamples
                 .AddCheck("Dependency2", () => HealthCheckResult.Healthy())
                 .AddCheck("Dependency3", () => HealthCheckResult.Healthy())
                     .CheckOnlyWhen<FeatureFlagsPolicy>(new [] { "Dependency2", "Dependency3" }, conditionalHealthCheckPolicyArgs: "A Feature Depending on Dependency2 and Dependency3")
+
+                // Customize health check responses when the health check registration is not evaluated
+                // By default the HealthStatus is HealthStatus.Healthy 
+                // A tag is also included in the conditional health check entry to mark the fact it was not checked
+                // By default this value the tag name is NotChecked, so this is also customizable
+                .AddCheck("CustomizedStatus", () => HealthCheckResult.Healthy())
+                    .CheckOnlyWhen("CustomizedStatus", whenCondition:false, options: new ConditionalHealthOptions
+                            {
+                                HealthStatusWhenNotChecked = HealthStatus.Degraded,
+                                NotCheckedTagName = "NotActive"
+                            })
                 ;
 
             services.AddSingleton<IFeatureFlags, FeatureFlags>();
