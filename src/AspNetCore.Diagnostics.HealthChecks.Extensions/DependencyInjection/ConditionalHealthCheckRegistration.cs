@@ -114,6 +114,24 @@ namespace Microsoft.Extensions.DependencyInjection
             return builder;
         }
 
+        public static IHealthChecksBuilder CheckOnlyWhen(this IHealthChecksBuilder builder, string[] names, bool whenCondition, ConditionalHealthOptions? options = null)
+            => builder.CheckOnlyWhen(names, (_, __, ___) => Task.FromResult(whenCondition), options);
+
+        public static IHealthChecksBuilder CheckOnlyWhen(this IHealthChecksBuilder builder, string[] names, Func<bool> predicate, ConditionalHealthOptions? options = null)
+            => builder.CheckOnlyWhen(names, (_, __, ___) => Task.FromResult(predicate()), options);
+
+        public static IHealthChecksBuilder CheckOnlyWhen(this IHealthChecksBuilder builder, string[] names, Func<CancellationToken, Task<bool>> predicate, ConditionalHealthOptions? options = null)
+            => builder.CheckOnlyWhen(names, (_, __, token) => predicate(token), options);
+
+        public static IHealthChecksBuilder CheckOnlyWhen(this IHealthChecksBuilder builder, string[] names, Func<IServiceProvider, bool> predicate, ConditionalHealthOptions? options = null)
+            => builder.CheckOnlyWhen(names, (sp, _, __) => Task.FromResult(predicate(sp)), options);
+
+        public static IHealthChecksBuilder CheckOnlyWhen(this IHealthChecksBuilder builder, string[] names, Func<IServiceProvider, CancellationToken, Task<bool>> predicate, ConditionalHealthOptions? options = null)
+            => builder.CheckOnlyWhen(names, (sp, _, token) => predicate(sp, token), options);
+
+        public static IHealthChecksBuilder CheckOnlyWhen(this IHealthChecksBuilder builder, string[] names, Func<IServiceProvider, HealthCheckContext, bool> predicate, ConditionalHealthOptions? options = null)
+            => builder.CheckOnlyWhen(names, (sp, context, _) => Task.FromResult(predicate(sp, context)), options);
+
         public static IHealthChecksBuilder CheckOnlyWhen<T>(this IHealthChecksBuilder builder, string[] names, Func<IServiceProvider, HealthCheckContext, CancellationToken, Task<T>> policyProvider, ConditionalHealthOptions? options = null)
             where T : IConditionalHealthCheckPolicy
         {
@@ -129,5 +147,29 @@ namespace Microsoft.Extensions.DependencyInjection
 
             return builder;
         }
+
+        public static IHealthChecksBuilder CheckOnlyWhen<T>(this IHealthChecksBuilder builder, string[] names, ConditionalHealthOptions? options = null, params object[] conditionalHealthCheckPolicyArgs)
+            where T : IConditionalHealthCheckPolicy
+            => builder.CheckOnlyWhen(names, (sp, _, __) => Task.FromResult(ActivatorUtilities.CreateInstance<T>(sp, conditionalHealthCheckPolicyArgs)), options);
+
+        public static IHealthChecksBuilder CheckOnlyWhen<T>(this IHealthChecksBuilder builder, string[] names, T policy, ConditionalHealthOptions? options = null)
+            where T : IConditionalHealthCheckPolicy
+            => builder.CheckOnlyWhen(names, (_, __, ___) => Task.FromResult(policy), options);
+
+        public static IHealthChecksBuilder CheckOnlyWhen<T>(this IHealthChecksBuilder builder, string[] names, Func<T> policyProvider, ConditionalHealthOptions? options = null)
+            where T : IConditionalHealthCheckPolicy
+            => builder.CheckOnlyWhen(names, (_, __, ___) => Task.FromResult(policyProvider()), options);
+
+        public static IHealthChecksBuilder CheckOnlyWhen<T>(this IHealthChecksBuilder builder, string[] names, Func<CancellationToken, Task<T>> policyProvider, ConditionalHealthOptions? options = null)
+            where T : IConditionalHealthCheckPolicy
+            => builder.CheckOnlyWhen(names, (_, __, token) => policyProvider(token), options);
+
+        public static IHealthChecksBuilder CheckOnlyWhen<T>(this IHealthChecksBuilder builder, string[] names, Func<IServiceProvider, T> policyProvider, ConditionalHealthOptions? options = null)
+            where T : IConditionalHealthCheckPolicy
+            => builder.CheckOnlyWhen(names, (sp, __, ___) => Task.FromResult(policyProvider(sp)), options);
+
+        public static IHealthChecksBuilder CheckOnlyWhen<T>(this IHealthChecksBuilder builder, string[] names, Func<IServiceProvider, CancellationToken, Task<T>> policyProvider, ConditionalHealthOptions? options = null)
+            where T : IConditionalHealthCheckPolicy
+            => builder.CheckOnlyWhen(names, (sp, __, token) => policyProvider(sp, token), options);
     }
 }

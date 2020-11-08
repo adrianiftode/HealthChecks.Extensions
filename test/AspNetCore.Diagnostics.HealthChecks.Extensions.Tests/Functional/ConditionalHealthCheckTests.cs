@@ -22,7 +22,7 @@ namespace AspNetCore.Diagnostics.HealthChecks.Extensions.Tests.Functional
                 {
                     services.AddHealthChecks()
                         .AddCheck("TheCheck", () => HealthCheckResult.Healthy(), new[] { "ThatCheck" })
-                        .CheckOnlyWhen("TheCheck", true);
+                            .CheckOnlyWhen("TheCheck", true);
                 })
                 .Configure(app =>
                 {
