@@ -1,0 +1,13 @@
+﻿{
+ "profiles": {
+    "ConditionalHealthChecksSamples": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "applicationUrl": "http://localhost:5000",
+      "launchUrl": "health",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}

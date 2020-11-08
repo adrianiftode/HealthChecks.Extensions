@@ -1,7 +1,7 @@
 ﻿// ReSharper disable All
-namespace AspNetCore.Diagnostics.HealthChecks.Extensions
+namespace Microsoft.Extensions.DependencyInjection
 {
-    public static class Check
+    public static class Registrations
     {
         public static readonly string ArangoDB = "arangodb";
         public static readonly string AzureBlobStorage = "azureblob";

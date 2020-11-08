@@ -93,7 +93,7 @@ namespace AspNetCore.Diagnostics.HealthChecks.Extensions.Tests
 
                 serviceCollection.AddHealthChecks()
                     .AddCheck("Test18", () => HealthCheckResult.Unhealthy())
-                        .CheckOnlyWhen(Check.Redis, true);
+                        .CheckOnlyWhen(Registrations.Redis, true);
             };
 
             act.Should().NotThrow();
