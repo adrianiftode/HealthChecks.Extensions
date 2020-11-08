@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Linq;
 using System.Threading;
 
+// ReSharper disable once CheckNamespace
 namespace Microsoft.Extensions.DependencyInjection
 {
     public static class ConditionalHealthCheckRegistration
@@ -19,19 +20,21 @@ namespace Microsoft.Extensions.DependencyInjection
                     throw new ArgumentNullException(nameof(name));
                 }
 
-                var registration = healthCheckOptions.Registrations.FirstOrDefault(c => c.Name == name);
+                var registration = healthCheckOptions.Registrations.FirstOrDefault(c => string.Equals(c.Name, name, StringComparison.OrdinalIgnoreCase));
 
                 if (registration == null)
                 {
-                    throw new InvalidOperationException($"A health check registration named `{name}` is not found in the health registrations list, " +
+                    throw new InvalidOperationException($"A health check registration named `{name}` was not found in the health registrations list, " +
                                                         "so its conditional check cannot be configured. " +
-                                                        "The registration must be added before configuring the conditional predicate.");
+                                                        $"The registration must be added before configuring the conditional predicate, so `{nameof(CheckOnlyWhen)}` must be called after the AddHealthCheck methods. " +
+                                                        $"The exiting registrations are: \n" +
+                                                        $"{string.Join("\n", healthCheckOptions.Registrations.Select(c => "        `" + c.Name + "`"))}");
                 }
 
                 var factory = registration.Factory;
                 registration.Factory = sp => new ConditionalHealthCheck(
                        () => factory(sp),
-                       (context, token) => predicate(sp, context, token), 
+                       (context, token) => predicate(sp, context, token),
                        options,
                        sp.GetService<ILogger<ConditionalHealthCheck>>()
                    );
@@ -66,7 +69,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
                 if (policy == null)
                 {
-                    throw new InvalidOperationException($"A policy of type `{name}` is could not be retrieved.");
+                    throw new InvalidOperationException($"A policy of type `{name}` could not be retrieved.");
                 }
 
                 return await policy.Evaluate(context);
@@ -95,10 +98,64 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IHealthChecksBuilder CheckOnlyWhen<T>(this IHealthChecksBuilder builder, string name, Func<IServiceProvider, CancellationToken, Task<T>> policyProvider, ConditionalHealthOptions? options = null)
             where T : IConditionalHealthCheckPolicy
             => builder.CheckOnlyWhen(name, (sp, __, token) => policyProvider(sp, token), options);
-    }
 
-    public interface IConditionalHealthCheckPolicy
-    {
-        Task<bool> Evaluate(HealthCheckContext context);
+        public static IHealthChecksBuilder CheckOnlyWhen(this IHealthChecksBuilder builder, string[] names, Func<IServiceProvider, HealthCheckContext, CancellationToken, Task<bool>> predicate, ConditionalHealthOptions? options = null)
+        {
+            if (names == null || names.Length == 0)
+            {
+                throw new ArgumentException(nameof(names));
+            }
+
+            foreach (var name in names)
+            {
+                builder.CheckOnlyWhen(name, predicate, options);
+            }
+
+            return builder;
+        }
+
+        public static IHealthChecksBuilder CheckOnlyWhen(this IHealthChecksBuilder builder, string name1, string name2, Func<IServiceProvider, HealthCheckContext, CancellationToken, Task<bool>> predicate, ConditionalHealthOptions? options = null)
+            => builder.CheckOnlyWhen(new[] { name1, name2 }, predicate, options);
+
+        public static IHealthChecksBuilder CheckOnlyWhen(this IHealthChecksBuilder builder, string name1, string name2, string name3, Func<IServiceProvider, HealthCheckContext, CancellationToken, Task<bool>> predicate, ConditionalHealthOptions? options = null)
+            => builder.CheckOnlyWhen(new[] { name1, name2, name3 }, predicate, options);
+
+        public static IHealthChecksBuilder CheckOnlyWhen(this IHealthChecksBuilder builder, string name1, string name2, string name3, string name4, Func<IServiceProvider, HealthCheckContext, CancellationToken, Task<bool>> predicate, ConditionalHealthOptions? options = null)
+            => builder.CheckOnlyWhen(new[] { name1, name2, name3, name4 }, predicate, options);
+
+        public static IHealthChecksBuilder CheckOnlyWhen(this IHealthChecksBuilder builder, string name1, string name2, string name3, string name4, string name5, Func<IServiceProvider, HealthCheckContext, CancellationToken, Task<bool>> predicate, ConditionalHealthOptions? options = null)
+            => builder.CheckOnlyWhen(new[] { name1, name2, name3, name4, name5 }, predicate, options);
+
+        public static IHealthChecksBuilder CheckOnlyWhen<T>(this IHealthChecksBuilder builder, string[] names, Func<IServiceProvider, HealthCheckContext, CancellationToken, Task<T>> policyProvider, ConditionalHealthOptions? options = null)
+            where T : IConditionalHealthCheckPolicy
+        {
+            if (names == null || names.Length == 0)
+            {
+                throw new ArgumentException(nameof(names));
+            }
+
+            foreach (var name in names)
+            {
+                builder.CheckOnlyWhen(name, policyProvider, options);
+            }
+
+            return builder;
+        }
+
+        public static IHealthChecksBuilder CheckOnlyWhen<T>(this IHealthChecksBuilder builder, string name1, string name2, Func<IServiceProvider, HealthCheckContext, CancellationToken, Task<T>> policyProvider, ConditionalHealthOptions? options = null)
+            where T : IConditionalHealthCheckPolicy
+            => builder.CheckOnlyWhen(new[] { name1, name2 }, policyProvider, options);
+
+        public static IHealthChecksBuilder CheckOnlyWhen<T>(this IHealthChecksBuilder builder, string name1, string name2, string name3, Func<IServiceProvider, HealthCheckContext, CancellationToken, Task<T>> policyProvider, ConditionalHealthOptions? options = null)
+            where T : IConditionalHealthCheckPolicy
+            => builder.CheckOnlyWhen(new[] { name1, name2, name3 }, policyProvider, options);
+
+        public static IHealthChecksBuilder CheckOnlyWhen<T>(this IHealthChecksBuilder builder, string name1, string name2, string name3, string name4, Func<IServiceProvider, HealthCheckContext, CancellationToken, Task<T>> policyProvider, ConditionalHealthOptions? options = null)
+            where T : IConditionalHealthCheckPolicy
+            => builder.CheckOnlyWhen(new[] { name1, name2, name3, name4 }, policyProvider, options);
+
+        public static IHealthChecksBuilder CheckOnlyWhen<T>(this IHealthChecksBuilder builder, string name1, string name2, string name3, string name4, string name5, Func<IServiceProvider, HealthCheckContext, CancellationToken, Task<bool>> predicate, ConditionalHealthOptions? options = null)
+            where T : IConditionalHealthCheckPolicy
+             => builder.CheckOnlyWhen(new[] { name1, name2, name3, name4, name5 }, predicate, options);
     }
 }

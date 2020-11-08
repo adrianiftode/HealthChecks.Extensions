@@ -96,7 +96,7 @@ namespace AspNetCore.Diagnostics.HealthChecks.Extensions.Tests
             };
 
             act.Should().ThrowExactly<InvalidOperationException>()
-                .WithMessage("*registration named `A Name Other Than TheCheck` is not found*");
+                .WithMessage("*registration named `A Name Other Than TheCheck` was not found*");
         }
 
         private static (IHealthCheck check, HealthCheckRegistration registration) Resolve(IServiceCollection services)
