@@ -1,4 +1,4 @@
-version: 0.0.{build}
+version: 1.0.{build}
 branches:
   only:
   - main
@@ -25,8 +25,8 @@ before_build:
 build_script:
   # Begin SonarScanner
   - ps: 'if (-Not $env:APPVEYOR_PULL_REQUEST_NUMBER) { & dotnet sonarscanner begin /k:"AspNetCore.Diagnostics.HealthChecks.Extensions" /o:adrianiftode-github /d:sonar.host.url="https://sonarcloud.io" /d:sonar.login="$env:SONAR_TOKEN" /v:"$env:APPVEYOR_BUILD_NUMBER" /d:sonar.cs.opencover.reportsPaths="opencovercoverage.xml" /d:sonar.coverage.exclusions=test/** /d:sonar.scanner.force-deprecated-java-version=true}'
-  - dotnet pack --no-restore
   - dotnet build
+  - dotnet pack --no-restore
   - minicover instrument
 test_script:
   - dotnet test --no-restore --no-build
