@@ -25,26 +25,6 @@ namespace AspNetCore.Diagnostics.HealthChecks.Extensions.Tests
                         .CheckOnlyWhen("Test1", () => true);
 
                 serviceCollection.AddHealthChecks()
-                    .AddCheck("Test2", () => HealthCheckResult.Unhealthy())
-                        .CheckOnlyWhen("Test2", async token => await Task.FromResult(true));
-
-                serviceCollection.AddHealthChecks()
-                    .AddCheck("Test3", () => HealthCheckResult.Unhealthy())
-                        .CheckOnlyWhen("Test3", sp => true);
-
-                serviceCollection.AddHealthChecks()
-                    .AddCheck("Test4", () => HealthCheckResult.Unhealthy())
-                        .CheckOnlyWhen("Test4", async token => await Task.FromResult(true));
-
-                serviceCollection.AddHealthChecks()
-                    .AddCheck("Test5", () => HealthCheckResult.Unhealthy())
-                        .CheckOnlyWhen("Test5", (sp, context) => true);
-
-                serviceCollection.AddHealthChecks()
-                    .AddCheck("Test6", () => HealthCheckResult.Unhealthy())
-                        .CheckOnlyWhen("Test6", async (sp, token) => await Task.FromResult(true));
-
-                serviceCollection.AddHealthChecks()
                     .AddCheck("Test7", () => HealthCheckResult.Unhealthy())
                         .CheckOnlyWhen("Test7",
                         async (sp, context, token) => await Task.Factory.StartNew(() => true, token));
@@ -60,21 +40,6 @@ namespace AspNetCore.Diagnostics.HealthChecks.Extensions.Tests
                 serviceCollection.AddHealthChecks()
                     .AddCheck("Test10", () => HealthCheckResult.Unhealthy())
                         .CheckOnlyWhen("Test10", () => new SomeParametrizedPolicy("Some variation"));
-
-                serviceCollection.AddHealthChecks()
-                    .AddCheck("Test11", () => HealthCheckResult.Unhealthy())
-                        .CheckOnlyWhen("Test11",
-                        async token => await Task.FromResult(new SomeParametrizedPolicy("Some variation")));
-
-                serviceCollection.AddHealthChecks()
-                    .AddCheck("Test12", () => HealthCheckResult.Unhealthy())
-                        .CheckOnlyWhen("Test12",
-                        async (sp, token) =>
-                            await Task.FromResult(new SomeParametrizedPolicy(variation: "Some variation")));
-
-                serviceCollection.AddHealthChecks()
-                    .AddCheck("Test13", () => HealthCheckResult.Unhealthy())
-                        .CheckOnlyWhen("Test13", sp => new SomeParametrizedPolicy(variation: "Some variation"));
 
                 serviceCollection.AddHealthChecks()
                     .AddCheck("Test14", () => HealthCheckResult.Unhealthy())
