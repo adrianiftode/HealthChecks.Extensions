@@ -15,7 +15,7 @@
     <VersionPrefix>1.0.1</VersionPrefix>
     <VersionSuffix>beta</VersionSuffix>
     <PackageProjectUrl>https://github.com/adrianiftode/AspNetCore.Diagnostics.HealthChecks.Extensions</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/adrianiftode/AspNetCore.Diagnostics.HealthChecks.Extensionsr</RepositoryUrl>
+    <RepositoryUrl>https://github.com/adrianiftode/AspNetCore.Diagnostics.HealthChecks.Extensions</RepositoryUrl>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
   </PropertyGroup>
