@@ -13,12 +13,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AspNetCore.Diagnostics.Heal
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{3845B1F6-3DF8-49BE-8A93-C92BE056DBFC}"
 	ProjectSection(SolutionItems) = preProject
+		appveyor.yml = appveyor.yml
 		README.md = README.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{6F3B4900-138C-4850-B918-ECEC73EA9CE9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConditionalHealthChecksSamples", "samples\ConditionalHealthChecksSamples\ConditionalHealthChecksSamples.csproj", "{85945F6D-6AD3-4080-B245-5D14C4B96FD2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConditionalHealthChecksSamples", "samples\ConditionalHealthChecksSamples\ConditionalHealthChecksSamples.csproj", "{85945F6D-6AD3-4080-B245-5D14C4B96FD2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
