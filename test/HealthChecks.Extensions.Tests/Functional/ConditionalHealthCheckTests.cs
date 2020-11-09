@@ -8,7 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Xunit;
 
-namespace AspNetCore.Diagnostics.HealthChecks.Extensions.Tests.Functional
+namespace HealthChecks.Extensions.Tests.Functional
 {
     public class ConditionalHealthCheckTests
     {
@@ -116,11 +116,11 @@ namespace AspNetCore.Diagnostics.HealthChecks.Extensions.Tests.Functional
                 {
                     services.AddHealthChecks()
                         .AddCheck("ThisPolicyShouldNotBeChecked", () => HealthCheckResult.Healthy())
-                            .CheckOnlyWhen<CheckOrNotCheckPolicy>("ThisPolicyShouldNotBeChecked", default, conditionalHealthCheckPolicyArgs: false)
+                            .CheckOnlyWhen<CheckOrNotCheckPolicy>("ThisPolicyShouldNotBeChecked", default, conditionalHealthCheckPolicyCtorArgs: false)
                         .AddCheck("ThisPolicyShouldBeChecked", () => HealthCheckResult.Healthy())
-                            .CheckOnlyWhen<CheckOrNotCheckPolicy>("ThisPolicyShouldBeChecked", default, conditionalHealthCheckPolicyArgs: true)
+                            .CheckOnlyWhen<CheckOrNotCheckPolicy>("ThisPolicyShouldBeChecked", default, conditionalHealthCheckPolicyCtorArgs: true)
                         .AddCheck("AlsoThisPolicyShouldNotBeChecked", () => HealthCheckResult.Healthy())
-                            .CheckOnlyWhen<CheckOrNotCheckPolicy>("AlsoThisPolicyShouldNotBeChecked", default, conditionalHealthCheckPolicyArgs: false);
+                            .CheckOnlyWhen<CheckOrNotCheckPolicy>("AlsoThisPolicyShouldNotBeChecked", default, conditionalHealthCheckPolicyCtorArgs: false);
                 })
                 .Configure(app =>
                 {
@@ -137,21 +137,21 @@ namespace AspNetCore.Diagnostics.HealthChecks.Extensions.Tests.Functional
 
             // Assert
             response.Should().Satisfy(givenModelStructure: new
-                {
-                    entries = new[]
+            {
+                entries = new[]
                     {
                         new
                         {
                             tags = new string[] { }
                         }
                     }
-                }, assertion: model =>
-                {
-                    model.entries.Should().SatisfyRespectively(
-                        firstPolicy => firstPolicy.tags.Should().Contain("NotChecked"),
-                        secondPolicy => secondPolicy.tags.Should().NotContain("NotChecked"),
-                        thirdPolicy => thirdPolicy.tags.Should().Contain("NotChecked"));
-                });
+            }, assertion: model =>
+            {
+                model.entries.Should().SatisfyRespectively(
+                    firstPolicy => firstPolicy.tags.Should().Contain("NotChecked"),
+                    secondPolicy => secondPolicy.tags.Should().NotContain("NotChecked"),
+                    thirdPolicy => thirdPolicy.tags.Should().Contain("NotChecked"));
+            });
         }
 
         internal class CheckOrNotCheckPolicy : IConditionalHealthCheckPolicy

@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace AspNetCore.Diagnostics.HealthChecks.Extensions.Tests.Functional
+namespace HealthChecks.Extensions.Tests.Functional
 {
 
     public class DefaultStartup
