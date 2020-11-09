@@ -17,7 +17,7 @@ namespace Microsoft.Extensions.DependencyInjection
             {
                 if (string.IsNullOrEmpty(name))
                 {
-                    throw new ArgumentNullException(nameof(name));
+                    throw new ArgumentException("Health check registration name cannot be null or empty.", nameof(name));
                 }
 
                 var registration = healthCheckOptions.Registrations.FirstOrDefault(c => string.Equals(c.Name, name, StringComparison.OrdinalIgnoreCase));
