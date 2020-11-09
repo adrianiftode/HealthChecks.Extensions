@@ -2,6 +2,8 @@
 
 A set of ASP.NET Health checks extensions for AspNetCore.Diagnostics.HealthChecks
 
+[![Build status](https://ci.appveyor.com/api/projects/status/94f8gktyknvmmu6t/branch/main?svg=true)](https://ci.appveyor.com/project/adrianiftode/aspnetcore-diagnostics-healthchecks-extensions/branch/main)
+
 ## Conditional checks
 
 ### Examples
