@@ -23,12 +23,14 @@ public void ConfigureServices(IServiceCollection services)
 
         // Specify a typed policy to enable executing a health check
         .AddCheck("Dependency1", () => HealthCheckResult.Healthy())
-            .CheckOnlyWhen<FeatureFlagsPolicy>("Dependency1", conditionalHealthCheckPolicyArgs: "A Flag for a Feature that depends on Dependency1")
+            .CheckOnlyWhen<FeatureFlagsPolicy>("Dependency1", 
+                conditionalHealthCheckPolicyArgs: "A Flag for a Feature that depends on Dependency1")
 
         // Specify a typed policy to check on multiple health checks
         .AddCheck("Dependency2", () => HealthCheckResult.Healthy())
         .AddCheck("Dependency3", () => HealthCheckResult.Healthy())
-            .CheckOnlyWhen<FeatureFlagsPolicy>(new [] { "Dependency2", "Dependency3" }, conditionalHealthCheckPolicyArgs: "A Flag for a Feature that depends on Dependency2 and Dependency3")
+            .CheckOnlyWhen<FeatureFlagsPolicy>(new [] { "Dependency2", "Dependency3" }, 
+                conditionalHealthCheckPolicyArgs: "A Flag for a Feature that depends on Dependency2 and Dependency3")
 
         // Customize health check responses when the health check registration is not evaluated
         // By default the HealthStatus is HealthStatus.Healthy 
