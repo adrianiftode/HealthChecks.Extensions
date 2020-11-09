@@ -43,7 +43,5 @@ public void ConfigureServices(IServiceCollection services)
                         NotCheckedTagName = "NotActive"
                     })
         ;
-
-    services.AddSingleton<IFeatureFlags, FeatureFlags>();
 }
 ```
