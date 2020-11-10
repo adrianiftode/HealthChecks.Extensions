@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
-namespace AspNetCore.Diagnostics.HealthChecks.Extensions.Tests.Functional
+namespace HealthChecks.Extensions.Tests.Functional
 {
     internal static class ResponseWriter
     {

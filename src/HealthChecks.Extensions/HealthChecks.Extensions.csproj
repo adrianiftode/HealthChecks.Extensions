@@ -8,14 +8,14 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <PackageId>AspNetCore.Diagnostics.HealthChecks.Extensions</PackageId>
+    <PackageId>HealthChecks.Extensions</PackageId>
     <Authors>Adrian Iftode</Authors>
     <PackageDescription>Extends .NET health checks implementations with new functionalities.</PackageDescription>
     <PackageTags>diagnostics;healthchecks</PackageTags>
-    <VersionPrefix>1.0.1</VersionPrefix>
+    <VersionPrefix>1.0.0</VersionPrefix>
     <VersionSuffix>beta</VersionSuffix>
-    <PackageProjectUrl>https://github.com/adrianiftode/AspNetCore.Diagnostics.HealthChecks.Extensions</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/adrianiftode/AspNetCore.Diagnostics.HealthChecks.Extensions</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/adrianiftode/HealthChecks.Extensions</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/adrianiftode/HealthChecks.Extensions</RepositoryUrl>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
   </PropertyGroup>

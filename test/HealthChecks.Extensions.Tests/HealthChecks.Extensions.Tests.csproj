@@ -23,7 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\AspNetCore.Diagnostics.HealthChecks.Extensions\AspNetCore.Diagnostics.HealthChecks.Extensions.csproj" />
+    <ProjectReference Include="..\..\src\HealthChecks.Extensions\HealthChecks.Extensions.csproj" />
   </ItemGroup>
 
 </Project>

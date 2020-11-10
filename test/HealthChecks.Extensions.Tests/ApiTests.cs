@@ -5,7 +5,7 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace AspNetCore.Diagnostics.HealthChecks.Extensions.Tests
+namespace HealthChecks.Extensions.Tests
 {
     public class ApiTests
     {

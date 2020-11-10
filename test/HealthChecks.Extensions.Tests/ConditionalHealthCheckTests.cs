@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
 
-namespace AspNetCore.Diagnostics.HealthChecks.Extensions.Tests
+namespace HealthChecks.Extensions.Tests
 {
     public class ConditionalHealthCheckTests
     {

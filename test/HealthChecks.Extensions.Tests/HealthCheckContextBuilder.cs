@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
-namespace AspNetCore.Diagnostics.HealthChecks.Extensions.Tests
+namespace HealthChecks.Extensions.Tests
 {
     public class HealthCheckContextBuilder
     {

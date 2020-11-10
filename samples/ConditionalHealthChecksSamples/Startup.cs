@@ -45,18 +45,18 @@ namespace ConditionalHealthChecksSamples
                 // Specify a typed policy to check on multiple health checks
                 .AddCheck("Dependency2", () => HealthCheckResult.Healthy())
                 .AddCheck("Dependency3", () => HealthCheckResult.Healthy())
-                    .CheckOnlyWhen<FeatureFlagsPolicy>(new [] { "Dependency2", "Dependency3" }, conditionalHealthCheckPolicyArgs: "A Flag for a Feature that depends on Dependency2 and Dependency3")
+                    .CheckOnlyWhen<FeatureFlagsPolicy>(new[] { "Dependency2", "Dependency3" }, conditionalHealthCheckPolicyArgs: "A Flag for a Feature that depends on Dependency2 and Dependency3")
 
                 // Customize health check responses when the health check registration is not evaluated
                 // By default the HealthStatus is HealthStatus.Healthy 
                 // A tag is also included in the conditional health check entry to mark the fact it was not checked
                 // By default this value the tag name is NotChecked, so this is also customizable
                 .AddCheck("CustomizedStatus", () => HealthCheckResult.Healthy())
-                    .CheckOnlyWhen("CustomizedStatus", whenCondition:true, options: new ConditionalHealthOptions
-                            {
-                                HealthStatusWhenNotChecked = HealthStatus.Degraded,
-                                NotCheckedTagName = "NotActive"
-                            })
+                    .CheckOnlyWhen("CustomizedStatus", whenCondition: true, options: new ConditionalHealthOptions
+                    {
+                        HealthStatusWhenNotChecked = HealthStatus.Degraded,
+                        NotCheckedTagName = "NotActive"
+                    })
                 ;
 
             services.AddSingleton<IFeatureFlags, FeatureFlags>();

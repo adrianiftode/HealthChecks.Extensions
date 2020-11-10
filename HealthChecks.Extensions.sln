@@ -5,11 +5,11 @@ VisualStudioVersion = 16.0.30611.23
 MinimumVisualStudioVersion = 15.0.26124.0
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{240534D9-E181-49E0-B38A-6EA328B71972}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AspNetCore.Diagnostics.HealthChecks.Extensions", "src\AspNetCore.Diagnostics.HealthChecks.Extensions\AspNetCore.Diagnostics.HealthChecks.Extensions.csproj", "{085458F3-2852-4383-871C-1F883174460D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HealthChecks.Extensions", "src\HealthChecks.Extensions\HealthChecks.Extensions.csproj", "{085458F3-2852-4383-871C-1F883174460D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{623BFCC8-4018-42B3-B221-E2957829AEFB}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AspNetCore.Diagnostics.HealthChecks.Extensions.Tests", "test\AspNetCore.Diagnostics.HealthChecks.Extensions.Tests\AspNetCore.Diagnostics.HealthChecks.Extensions.Tests.csproj", "{BDAD8F0E-9584-4083-B3C6-82EAAC0498EE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HealthChecks.Extensions.Tests", "test\HealthChecks.Extensions.Tests\HealthChecks.Extensions.Tests.csproj", "{BDAD8F0E-9584-4083-B3C6-82EAAC0498EE}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{3845B1F6-3DF8-49BE-8A93-C92BE056DBFC}"
 	ProjectSection(SolutionItems) = preProject

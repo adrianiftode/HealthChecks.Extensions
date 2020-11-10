@@ -1,4 +1,4 @@
-﻿using AspNetCore.Diagnostics.HealthChecks.Extensions;
+﻿using HealthChecks.Extensions;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
 using System;

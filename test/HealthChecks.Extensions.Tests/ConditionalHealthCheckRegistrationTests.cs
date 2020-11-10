@@ -7,7 +7,7 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Options;
 using Xunit;
 
-namespace AspNetCore.Diagnostics.HealthChecks.Extensions.Tests
+namespace HealthChecks.Extensions.Tests
 {
 
     public class ConditionalHealthCheckRegistrationTests
