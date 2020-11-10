@@ -14,17 +14,17 @@ namespace HealthChecks.Extensions
     internal class ConditionalHealthCheck : IHealthCheck
     {
         private readonly Func<HealthCheckContext, CancellationToken, Task<bool>> _predicate;
-        private readonly ConditionalHealthOptions _options;
+        private readonly ConditionalHealthCheckOptions _options;
         private readonly ILogger<ConditionalHealthCheck>? _logger;
 
         public ConditionalHealthCheck(Func<IHealthCheck> healthCheckFactory,
             Func<HealthCheckContext, CancellationToken, Task<bool>> predicate,
-            ConditionalHealthOptions? options,
+            ConditionalHealthCheckOptions? options,
             ILogger<ConditionalHealthCheck>? logger)
         {
             HealthCheckFactory = healthCheckFactory ?? throw new ArgumentNullException(nameof(healthCheckFactory));
             _predicate = predicate ?? throw new ArgumentNullException(nameof(predicate));
-            _options = ConditionalHealthOptions.DefaultFrom(options);
+            _options = ConditionalHealthCheckOptions.DefaultFrom(options);
             _logger = logger;
         }
 

@@ -49,7 +49,7 @@ namespace HealthChecks.Extensions.Tests
 
                 serviceCollection.AddHealthChecks()
                     .AddCheck("Test15", () => HealthCheckResult.Unhealthy())
-                        .CheckOnlyWhen("Test15", true, new ConditionalHealthOptions { HealthStatusWhenNotChecked = HealthStatus.Degraded });
+                        .CheckOnlyWhen("Test15", true, new ConditionalHealthCheckOptions { HealthStatusWhenNotChecked = HealthStatus.Degraded });
 
                 serviceCollection.AddHealthChecks()
                     .AddCheck("Test16", () => HealthCheckResult.Unhealthy())

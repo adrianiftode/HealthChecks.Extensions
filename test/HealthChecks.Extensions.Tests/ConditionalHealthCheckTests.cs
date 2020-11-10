@@ -105,7 +105,7 @@ namespace HealthChecks.Extensions.Tests
         {
             // Arrange
             var decoratedHealthCheckMock = new Mock<IHealthCheck>();
-            var sut = new ConditionalHealthCheck(() => decoratedHealthCheckMock.Object, (_, __) => Task.FromResult(false), new ConditionalHealthOptions
+            var sut = new ConditionalHealthCheck(() => decoratedHealthCheckMock.Object, (_, __) => Task.FromResult(false), new ConditionalHealthCheckOptions
             {
                 NotCheckedTagName = "MyTag"
             }, null);
@@ -172,7 +172,7 @@ namespace HealthChecks.Extensions.Tests
         {
             // Arrange
             var decoratedHealthCheckMock = new Mock<IHealthCheck>();
-            var sut = new ConditionalHealthCheck(() => decoratedHealthCheckMock.Object, (_, __) => Task.FromResult(false), new ConditionalHealthOptions
+            var sut = new ConditionalHealthCheck(() => decoratedHealthCheckMock.Object, (_, __) => Task.FromResult(false), new ConditionalHealthCheckOptions
             {
                 HealthStatusWhenNotChecked = HealthStatus.Degraded
             }, null);

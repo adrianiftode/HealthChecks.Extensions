@@ -24,7 +24,7 @@ namespace HealthChecks.Extensions.Tests
                     executed = true;
                     return HealthCheckResult.Healthy();
                 })
-                .CheckOnlyWhen("TheCheck", whenCondition: false);
+                .CheckOnlyWhen("TheCheck", conditionToRun: false);
 
             var (check, registration) = Resolve(services);
 
@@ -50,7 +50,7 @@ namespace HealthChecks.Extensions.Tests
                     executed = true;
                     return HealthCheckResult.Healthy();
                 })
-                .CheckOnlyWhen("TheCheck", whenCondition:true);
+                .CheckOnlyWhen("TheCheck", conditionToRun: true);
 
             var (check, registration) = Resolve(services);
 
@@ -71,7 +71,7 @@ namespace HealthChecks.Extensions.Tests
             var services = new ServiceCollection();
             services.AddHealthChecks()
                 .AddCheck("TheCheck", () => HealthCheckResult.Healthy())
-                .CheckOnlyWhen("TheCheck", whenCondition: false);
+                .CheckOnlyWhen("TheCheck", conditionToRun: false);
 
             // Act
             var (check, registration) = Resolve(services);
@@ -90,7 +90,7 @@ namespace HealthChecks.Extensions.Tests
                 var services = new ServiceCollection();
                 services.AddHealthChecks()
                     .AddCheck("TheCheck", () => HealthCheckResult.Healthy())
-                    .CheckOnlyWhen("A Name Other Than TheCheck", whenCondition: false);
+                    .CheckOnlyWhen("A Name Other Than TheCheck", conditionToRun: false);
 
                 var (_, __) = Resolve(services);
             };
