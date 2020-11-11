@@ -99,6 +99,63 @@ namespace HealthChecks.Extensions.Tests
                 .WithMessage("*registration named `A Name Other Than TheCheck` was not found*");
         }
 
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        public void Throws_ArgumentException_When_The_Health_Check_Name_Is_Null_Or_Empty(string name)
+        {
+            // Arrange
+            Action act = () =>
+            {
+                var services = new ServiceCollection();
+                services.AddHealthChecks()
+                    .AddCheck("TheCheck", () => HealthCheckResult.Healthy())
+                    .CheckOnlyWhen(name, conditionToRun: false);
+
+                var (_, __) = Resolve(services);
+            };
+
+            act.Should().ThrowExactly<ArgumentException>()
+                .WithMessage("*cannot be null or empty*");
+        }
+
+        [Fact]
+        public void Throws_ArgumentException_When_The_Health_Check_Names_Is_Empty()
+        {
+            // Arrange
+            Action act = () =>
+            {
+                var services = new ServiceCollection();
+                services.AddHealthChecks()
+                    .AddCheck("TheCheck", () => HealthCheckResult.Healthy())
+                    .CheckOnlyWhen(new string[] { }, conditionToRun: false);
+
+                var (_, __) = Resolve(services);
+            };
+
+            act.Should().ThrowExactly<ArgumentException>()
+                .WithMessage("*cannot be null*empty*");
+        }
+
+        [Fact]
+        public void Throws_ArgumentException_When_The_Health_Check_Names_Is_Null()
+        {
+            // Arrange
+            Action act = () =>
+            {
+                var services = new ServiceCollection();
+                string[] names = null;
+                services.AddHealthChecks()
+                    .AddCheck("TheCheck", () => HealthCheckResult.Healthy())
+                    .CheckOnlyWhen(names!, conditionToRun: false);
+
+                var (_, __) = Resolve(services);
+            };
+
+            act.Should().ThrowExactly<ArgumentException>()
+                .WithMessage("*cannot be null*empty*");
+        }
+
         private static (IHealthCheck check, HealthCheckRegistration registration) Resolve(IServiceCollection services)
         {
             var serviceProvider = services.BuildServiceProvider();

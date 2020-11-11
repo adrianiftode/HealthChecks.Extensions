@@ -268,7 +268,7 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             if (names == null || names.Length == 0)
             {
-                throw new ArgumentException(nameof(names));
+                throw new ArgumentException("The health checks names cannot be null or an empty array.", nameof(names));
             }
 
             foreach (var name in names)
