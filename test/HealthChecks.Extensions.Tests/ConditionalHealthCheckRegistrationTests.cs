@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
@@ -85,9 +86,11 @@ namespace HealthChecks.Extensions.Tests
         public void Throws_InvalidOperationException_When_The_Original_Health_Check_Is_Not_Found()
         {
             // Arrange
+            var services = new ServiceCollection();
+
+            // Arrange
             Action act = () =>
             {
-                var services = new ServiceCollection();
                 services.AddHealthChecks()
                     .AddCheck("TheCheck", () => HealthCheckResult.Healthy())
                     .CheckOnlyWhen("A Name Other Than TheCheck", conditionToRun: false);
@@ -95,6 +98,7 @@ namespace HealthChecks.Extensions.Tests
                 var (_, __) = Resolve(services);
             };
 
+            // Act
             act.Should().ThrowExactly<InvalidOperationException>()
                 .WithMessage("*registration named `A Name Other Than TheCheck` was not found*");
         }
@@ -105,55 +109,103 @@ namespace HealthChecks.Extensions.Tests
         public void Throws_ArgumentException_When_The_Health_Check_Name_Is_Null_Or_Empty(string name)
         {
             // Arrange
-            Action act = () =>
-            {
-                var services = new ServiceCollection();
-                services.AddHealthChecks()
-                    .AddCheck("TheCheck", () => HealthCheckResult.Healthy())
-                    .CheckOnlyWhen(name, conditionToRun: false);
+            var services = new ServiceCollection();
 
-                var (_, __) = Resolve(services);
-            };
+            // Act
+            Action act = () => services.AddHealthChecks()
+                .AddCheck("TheCheck", () => HealthCheckResult.Healthy())
+                .CheckOnlyWhen(name, conditionToRun: false);
 
+            // Assert
             act.Should().ThrowExactly<ArgumentException>()
                 .WithMessage("*cannot be null or empty*");
         }
 
         [Fact]
-        public void Throws_ArgumentException_When_The_Health_Check_Names_Is_Empty()
+        public void Throws_ArgumentException_When_The_Predicate_Is_Null()
         {
             // Arrange
-            Action act = () =>
-            {
-                var services = new ServiceCollection();
-                services.AddHealthChecks()
-                    .AddCheck("TheCheck", () => HealthCheckResult.Healthy())
-                    .CheckOnlyWhen(new string[] { }, conditionToRun: false);
+            var services = new ServiceCollection();
 
-                var (_, __) = Resolve(services);
-            };
+            // Act
+            Action act = () => services.AddHealthChecks()
+                .AddCheck("TheCheck", () => HealthCheckResult.Healthy())
+                .CheckOnlyWhen("TheCheck", (Func<IServiceProvider, HealthCheckContext, CancellationToken, Task<bool>>)null);
 
+            // Assert
+            act.Should().ThrowExactly<ArgumentNullException>();
+        }
+
+        [Fact]
+        public void Throws_ArgumentException_When_The_Health_Check_Names_Array_Is_Empty()
+        {
+            // Arrange
+            var services = new ServiceCollection();
+
+            // Act
+            Action act = () => services.AddHealthChecks()
+                .AddCheck("TheCheck", () => HealthCheckResult.Healthy())
+                .CheckOnlyWhen(new string[] { }, conditionToRun: false);
+
+            // Assert
             act.Should().ThrowExactly<ArgumentException>()
                 .WithMessage("*cannot be null*empty*");
         }
 
         [Fact]
-        public void Throws_ArgumentException_When_The_Health_Check_Names_Is_Null()
+        public void Throws_ArgumentException_When_The_Health_Check_Names_Array_Is_Null()
         {
             // Arrange
-            Action act = () =>
-            {
-                var services = new ServiceCollection();
-                string[] names = null;
-                services.AddHealthChecks()
-                    .AddCheck("TheCheck", () => HealthCheckResult.Healthy())
-                    .CheckOnlyWhen(names!, conditionToRun: false);
+            var services = new ServiceCollection();
+            string[] names = null;
 
-                var (_, __) = Resolve(services);
-            };
+            // Act
+            Action act = () => services.AddHealthChecks()
+                .AddCheck("TheCheck", () => HealthCheckResult.Healthy())
+                .CheckOnlyWhen(names!, conditionToRun: false);
 
+            // Assert
             act.Should().ThrowExactly<ArgumentException>()
                 .WithMessage("*cannot be null*empty*");
+        }
+
+        [Fact]
+        public void Throws_ArgumentException_For_Policy_When_The_Health_Check_Names_Array_Is_Empty()
+        {
+            // Arrange
+            var services = new ServiceCollection();
+
+            // Act
+            Action act = () => services.AddHealthChecks()
+                .AddCheck("TheCheck", () => HealthCheckResult.Healthy())
+                .CheckOnlyWhen<SomePolicy>(new string[] { });
+
+            // Assert
+            act.Should().ThrowExactly<ArgumentException>()
+                .WithMessage("*cannot be null*empty*");
+        }
+
+        [Fact]
+        public async Task Throws_InvalidOperationException_When_Policy_Provider_Returns_A_Null_Policy()
+        {
+            // Arrange
+            var services = new ServiceCollection();
+            services.AddHealthChecks()
+                .AddCheck("TheCheck", () => HealthCheckResult.Healthy())
+                .CheckOnlyWhen("TheCheck", () => (SomePolicy)null);
+
+            // Act
+            Func<Task> act = async () =>
+            {
+
+                var (policy, registration) = Resolve(services);
+
+                await policy.CheckHealthAsync(new HealthCheckContext { Registration = registration });
+            };
+
+            // Assert
+            (await act.Should().ThrowExactlyAsync<InvalidOperationException>())
+                .WithMessage("A policy of type `SomePolicy` could not be retrieved as it was null.");
         }
 
         private static (IHealthCheck check, HealthCheckRegistration registration) Resolve(IServiceCollection services)

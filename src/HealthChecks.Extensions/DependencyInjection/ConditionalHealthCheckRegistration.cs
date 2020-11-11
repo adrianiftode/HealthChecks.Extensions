@@ -39,13 +39,18 @@ namespace Microsoft.Extensions.DependencyInjection
             Func<IServiceProvider, HealthCheckContext, CancellationToken, Task<bool>> predicate,
             ConditionalHealthCheckOptions? options = null)
         {
+            if (string.IsNullOrEmpty(name))
+            {
+                throw new ArgumentException("Health check registration name cannot be null or empty.", nameof(name));
+            }
+
+            if (predicate == null)
+            {
+                throw new ArgumentNullException(nameof(predicate));
+            }
+
             builder.Services.Configure<HealthCheckServiceOptions>(healthCheckOptions =>
             {
-                if (string.IsNullOrEmpty(name))
-                {
-                    throw new ArgumentException("Health check registration name cannot be null or empty.", nameof(name));
-                }
-
                 var registration = healthCheckOptions.Registrations.FirstOrDefault(c => string.Equals(c.Name, name, StringComparison.OrdinalIgnoreCase));
 
                 if (registration == null)
@@ -149,7 +154,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
                 if (policy == null)
                 {
-                    throw new InvalidOperationException($"A policy of type `{name}` could not be retrieved.");
+                    throw new InvalidOperationException($"A policy of type `{typeof(T).Name}` could not be retrieved as it was null.");
                 }
 
                 return await policy.Evaluate(context);
@@ -356,7 +361,7 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             if (names == null || names.Length == 0)
             {
-                throw new ArgumentException(nameof(names));
+                throw new ArgumentException("The health checks names cannot be null or an empty array.", nameof(names));
             }
 
             foreach (var name in names)
