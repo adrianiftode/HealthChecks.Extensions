@@ -116,11 +116,11 @@ namespace HealthChecks.Extensions.Tests.Functional
                 {
                     services.AddHealthChecks()
                         .AddCheck("ThisPolicyShouldNotBeChecked", () => HealthCheckResult.Healthy())
-                            .CheckOnlyWhen<CheckOrNotCheckPolicy>("ThisPolicyShouldNotBeChecked", default, conditionalHealthCheckPolicyArgs: false)
+                            .CheckOnlyWhen<CheckOrNotCheckPolicy>("ThisPolicyShouldNotBeChecked", default, conditionalHealthCheckPolicyCtorArgs: false)
                         .AddCheck("ThisPolicyShouldBeChecked", () => HealthCheckResult.Healthy())
-                            .CheckOnlyWhen<CheckOrNotCheckPolicy>("ThisPolicyShouldBeChecked", default, conditionalHealthCheckPolicyArgs: true)
+                            .CheckOnlyWhen<CheckOrNotCheckPolicy>("ThisPolicyShouldBeChecked", default, conditionalHealthCheckPolicyCtorArgs: true)
                         .AddCheck("AlsoThisPolicyShouldNotBeChecked", () => HealthCheckResult.Healthy())
-                            .CheckOnlyWhen<CheckOrNotCheckPolicy>("AlsoThisPolicyShouldNotBeChecked", default, conditionalHealthCheckPolicyArgs: false);
+                            .CheckOnlyWhen<CheckOrNotCheckPolicy>("AlsoThisPolicyShouldNotBeChecked", default, conditionalHealthCheckPolicyCtorArgs: false);
                 })
                 .Configure(app =>
                 {
