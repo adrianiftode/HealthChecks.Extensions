@@ -21,20 +21,25 @@ namespace ConditionalHealthChecksSamples
             Environment = environment;
             Configuration = configuration;
         }
-        // This method gets called by the runtime. Use this method to add services to the container.
-        // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
+
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddHealthChecks()
-                // Check on Redis only when the connection string is set.
-                .AddRedis(Configuration["Redis:ConnectionString"])
-                    .CheckOnlyWhen(Registrations.Redis, !string.IsNullOrEmpty(Configuration["Redis:ConnectionString"]))
 
-                // Due to the fact the condition is expressed as a predicate, then this is evaluated with every request
-                // thus in this example when the `ADependency:Setting` config is changed, then the result is re-evaluated
-                // In the Redis example the condition is evaluated once, at startup.
+                // Check on Redis only when the environment is other than development
+                .AddRedis(Configuration["Redis:ConnectionString"])
+                    .CheckOnlyWhen(Registrations.Redis, !Environment.IsDevelopment())
+
+                // Express the condition as a predicate.
+                // Due to this, the condition is evaluated with every request
+                //
+                // In this example when the `ADependency:Setting` config is changed,
+                // then the health check on `A Dependency` is re-evaluated as usual.
+                //
+                // In the Redis example such a condition is evaluated once, at startup.
                 .AddCheck("A Dependency", () => HealthCheckResult.Healthy())
-                    .CheckOnlyWhen("A Dependency", () => !string.IsNullOrEmpty(Configuration["ADependency:Setting"]))
+                    .CheckOnlyWhen("A Dependency",
+                                    () => !string.IsNullOrEmpty(Configuration["ADependency:Setting"]))
 
                 // Check on RabbitMQ only a specific feature flag is set.
                 // The condition is executed asynchronously with every health check request
@@ -47,6 +52,8 @@ namespace ConditionalHealthChecksSamples
                                 })
 
                 // Specify a typed policy to enable executing a health check
+                // This policy could have an exhaustive implementation and
+                // reused with other dependencies.
                 .AddCheck("Dependency1", () => HealthCheckResult.Healthy())
                     .CheckOnlyWhen<FeatureFlagsPolicy>("Dependency1",
                         conditionalHealthCheckPolicyCtorArgs: "A Flag for a Feature that depends on Dependency1")
@@ -55,19 +62,23 @@ namespace ConditionalHealthChecksSamples
                 .AddCheck("Dependency2", () => HealthCheckResult.Healthy())
                 .AddCheck("Dependency3", () => HealthCheckResult.Healthy())
                     .CheckOnlyWhen<FeatureFlagsPolicy>(new[] { "Dependency2", "Dependency3" },
-                        conditionalHealthCheckPolicyCtorArgs: "A Flag for a Feature that depends on Dependency2 and Dependency3")
+                        conditionalHealthCheckPolicyCtorArgs: "A Flag for a Feature that depends on both dependencies.")
 
                 // Customize health check responses when the health check registration is not evaluated
                 // By default the HealthStatus is HealthStatus.Healthy 
-                // A tag is also included in the conditional health check entry to mark the fact it was not checked
-                // By default this value the tag name is NotChecked, so this is also customizable
+
+                // A tag is also included in the conditional health check entry
+                // to mark the fact it was not checked
+                //
+                // By default this value the tag name is `NotChecked`, so this is also customizable
                 .AddCheck("CustomizedStatus", () => HealthCheckResult.Healthy())
-                    .CheckOnlyWhen("CustomizedStatus", conditionToRun: true, options: new ConditionalHealthCheckOptions
-                    {
-                        HealthStatusWhenNotChecked = HealthStatus.Degraded,
-                        NotCheckedTagName = "NotActive"
-                    })
-                ;
+                    .CheckOnlyWhen("CustomizedStatus",
+                        conditionToRun: true,
+                        options: new ConditionalHealthCheckOptions
+                        {
+                            HealthStatusWhenNotChecked = HealthStatus.Degraded,
+                            NotCheckedTagName = "NotActive"
+                        });
 
             services.AddSingleton<IFeatureFlags, FeatureFlags>();
         }
