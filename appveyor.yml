@@ -38,9 +38,8 @@ init:
 
 skip_commits:
   files:
-    - docs/*
-    - art/*
-    - '**/*.md'    
+    - samples/**/*
+    - '**/*.md'
     - .gitignore
     - .editorconfig
   message: /updated readme.*|update readme.*s|update docs.*|update version.*|update changelog.*/
