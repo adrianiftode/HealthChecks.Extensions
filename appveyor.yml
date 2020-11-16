@@ -37,13 +37,14 @@ init:
   # disable minicover
   # - cmd: dotnet tool install -g minicover
 
-skip_commits:
-  files:
-    - samples/**/*
-    - '**/*.md'
-    - .gitignore
-    - .editorconfig
-  message: /updated readme.*|update readme.*s|update docs.*|update version.*|update changelog.*/
+# Disable skipping commints
+# skip_commits:
+#  files:
+#    - samples/**/*
+#    - '**/*.md'
+#    - .gitignore
+#    - .editorconfig
+#  message: /updated readme.*|update readme.*s|update docs.*|update version.*|update changelog.*/
 
 
 nuget:
