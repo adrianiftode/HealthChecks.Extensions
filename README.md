@@ -13,7 +13,7 @@ PM> Install-Package HealthChecks.Extensions
 > dotnet add package HealthChecks.Extensions
 ```
 ```xml
-<PackageReference Include="HealthChecks.Extensions" Version="1.0.0" />
+<PackageReference Include="HealthChecks.Extensions" Version="1.0.1" />
 ```
 ## Conditional Health Checks
 
