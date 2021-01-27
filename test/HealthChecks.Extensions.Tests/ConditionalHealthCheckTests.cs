@@ -16,7 +16,7 @@ namespace HealthChecks.Extensions.Tests
         public void Ctor_Logger_Is_Optional()
         {
             // Arrange
-            Action act = () => new ConditionalHealthCheck(() => null, (_, __) => null, null,logger: null);
+            Action act = () => new ConditionalHealthCheck(() => null, (_, __) => null, null, logger: null);
 
             // Act
             act.Should().NotThrow();
@@ -26,7 +26,7 @@ namespace HealthChecks.Extensions.Tests
         public void Ctor_Options_Are_Optional()
         {
             // Arrange
-            Action act = () => new ConditionalHealthCheck(() => null, (_, __) => null, options:null, null);
+            Action act = () => new ConditionalHealthCheck(() => null, (_, __) => null, options: null, null);
 
             // Act
             act.Should().NotThrow();

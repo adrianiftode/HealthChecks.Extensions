@@ -13,6 +13,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HealthChecks.Extensions.Tes
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{3845B1F6-3DF8-49BE-8A93-C92BE056DBFC}"
 	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
 		appveyor.yml = appveyor.yml
 		README.md = README.md
 	EndProjectSection
@@ -20,6 +21,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{6F3B4900-138C-4850-B918-ECEC73EA9CE9}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConditionalHealthChecksSamples", "samples\ConditionalHealthChecksSamples\ConditionalHealthChecksSamples.csproj", "{85945F6D-6AD3-4080-B245-5D14C4B96FD2}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InterceptingHealthChecksSamples", "samples\InterceptingHealthChecksSamples\InterceptingHealthChecksSamples.csproj", "{CDB5E0EC-6089-4496-9EFB-5A829BC99CB2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -67,6 +70,18 @@ Global
 		{85945F6D-6AD3-4080-B245-5D14C4B96FD2}.Release|x64.Build.0 = Release|Any CPU
 		{85945F6D-6AD3-4080-B245-5D14C4B96FD2}.Release|x86.ActiveCfg = Release|Any CPU
 		{85945F6D-6AD3-4080-B245-5D14C4B96FD2}.Release|x86.Build.0 = Release|Any CPU
+		{CDB5E0EC-6089-4496-9EFB-5A829BC99CB2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CDB5E0EC-6089-4496-9EFB-5A829BC99CB2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CDB5E0EC-6089-4496-9EFB-5A829BC99CB2}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{CDB5E0EC-6089-4496-9EFB-5A829BC99CB2}.Debug|x64.Build.0 = Debug|Any CPU
+		{CDB5E0EC-6089-4496-9EFB-5A829BC99CB2}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{CDB5E0EC-6089-4496-9EFB-5A829BC99CB2}.Debug|x86.Build.0 = Debug|Any CPU
+		{CDB5E0EC-6089-4496-9EFB-5A829BC99CB2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CDB5E0EC-6089-4496-9EFB-5A829BC99CB2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CDB5E0EC-6089-4496-9EFB-5A829BC99CB2}.Release|x64.ActiveCfg = Release|Any CPU
+		{CDB5E0EC-6089-4496-9EFB-5A829BC99CB2}.Release|x64.Build.0 = Release|Any CPU
+		{CDB5E0EC-6089-4496-9EFB-5A829BC99CB2}.Release|x86.ActiveCfg = Release|Any CPU
+		{CDB5E0EC-6089-4496-9EFB-5A829BC99CB2}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -75,6 +90,7 @@ Global
 		{085458F3-2852-4383-871C-1F883174460D} = {240534D9-E181-49E0-B38A-6EA328B71972}
 		{BDAD8F0E-9584-4083-B3C6-82EAAC0498EE} = {623BFCC8-4018-42B3-B221-E2957829AEFB}
 		{85945F6D-6AD3-4080-B245-5D14C4B96FD2} = {6F3B4900-138C-4850-B918-ECEC73EA9CE9}
+		{CDB5E0EC-6089-4496-9EFB-5A829BC99CB2} = {6F3B4900-138C-4850-B918-ECEC73EA9CE9}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B4F0CB1E-4745-44C2-B92E-F8797A9EDF18}

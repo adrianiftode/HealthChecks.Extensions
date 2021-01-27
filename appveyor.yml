@@ -76,7 +76,7 @@ artifacts:
 
 deploy:
   - provider: NuGet
-    api_key:
+  - api_key:
      secure: i1i67C8dR8UJ/KvlIHBjgJgWJ6GwzcmI/FqJSvFwL7e/1ECRF+jepJLlOVkMJ7L9
     artifact: /.*HealthChecks.*\.nupkg/
     on: 
