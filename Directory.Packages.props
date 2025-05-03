@@ -6,15 +6,13 @@
   <ItemGroup>
     <PackageVersion Include="AspNetCore.HealthChecks.RabbitMQ" Version="3.1.2" />
     <PackageVersion Include="AspNetCore.HealthChecks.Redis" Version="3.1.2" />
-    <PackageVersion Include="FluentAssertions" Version="5.10.0" />
-    <PackageVersion Include="FluentAssertions.Web" Version="1.0.125" />
+    <PackageVersion Include="FluentAssertions.Web" Version="1.9.5" />
     <PackageVersion Include="ILogger.Moq" Version="1.1.5" />
-    <PackageVersion Include="Microsoft.AspNetCore.Diagnostics.HealthChecks" Version="2.2.0" />
-    <PackageVersion Include="Microsoft.AspNetCore.TestHost" Version="3.1.9" />
-    <PackageVersion Include="Microsoft.Extensions.Configuration" Version="3.1.9" />
-    <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="3.1.9" />
-    <PackageVersion Include="Microsoft.Extensions.Diagnostics.HealthChecks" Version="2.2.0" />
-    <PackageVersion Include="Microsoft.Extensions.Options" Version="3.1.9" />
+    <PackageVersion Include="Microsoft.AspNetCore.TestHost" Version="9.0.0" />
+    <PackageVersion Include="Microsoft.Extensions.Configuration" Version="9.0.0" />
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="9.0.0" />
+    <PackageVersion Include="Microsoft.Extensions.Diagnostics.HealthChecks" Version="3.1.2" />
+    <PackageVersion Include="Microsoft.Extensions.Options" Version="9.0.4" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="16.7.1" />
     <PackageVersion Include="Moq" Version="4.14.7" />
     <PackageVersion Include="xunit" Version="2.4.1" />

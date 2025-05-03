@@ -1,19 +1,23 @@
 version: 1.0.0-ci-{build}
-image: Visual Studio 2019
-pull_requests:
-  do_not_increment_build_number: false
+image: Visual Studio 2022
 branches:
   only:
   - main
+  - /\d+\.\d+\.\d+/
+pull_requests:
+  do_not_increment_build_number: false
 skip_branch_with_pr: true
 configuration: Release
-environment:
-  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
-  DOTNET_CLI_TELEMETRY_OPTOUT: 1
 shallow_clone: true
 
+skip_commits:
+  files:
+    - '**/*.md'
+    - .gitignore
+    - .editorconfig
+    - samples/**/*
+
 init:
-  # Set "build version number"
   - ps: |
       if ($env:APPVEYOR_REPO_TAG -eq "true")
       {
@@ -34,18 +38,7 @@ init:
   - cmd: dotnet --version
   # install the tools
   - ps: 'if (-Not $env:APPVEYOR_PULL_REQUEST_NUMBER) { & dotnet tool install -g dotnet-sonarscanner }'
-  # disable minicover
-  # - cmd: dotnet tool install -g minicover
-
-# Disable skipping commints
-# skip_commits:
-#  files:
-#    - samples/**/*
-#    - '**/*.md'
-#    - .gitignore
-#    - .editorconfig
-#  message: /updated readme.*|update readme.*s|update docs.*|update version.*|update changelog.*/
-
+  - cmd: dotnet tool install -g minicover
 
 nuget:
   project_feed: true 
@@ -53,22 +46,25 @@ before_build:
   - dotnet restore
 build_script:
   # Begin SonarScanner
+  # Ensure Java 15, required by Sonar
+  - set JAVA_HOME=C:\Program Files\Java\jdk19
+  - if not exist "%JAVA_HOME%\bin\java.exe" (echo "%JAVA_HOME%\bin\java.exe does not exist" && exit 1)
+  - set PATH=%JAVA_HOME%\bin;%PATH%
   - ps: 'if (-Not $env:APPVEYOR_PULL_REQUEST_NUMBER) { & dotnet sonarscanner begin /k:"HealthChecks.Extensions" /o:adrianiftode-github /d:sonar.host.url="https://sonarcloud.io" /d:sonar.login="$env:SONAR_TOKEN" /v:"$env:APPVEYOR_BUILD_NUMBER" /d:sonar.cs.opencover.reportsPaths="opencovercoverage.xml" /d:sonar.coverage.exclusions=test/** /d:sonar.scanner.force-deprecated-java-version=true}'
   - dotnet build -c %CONFIGURATION% /p:Version=%APPVEYOR_BUILD_VERSION%
   # disable minicover
-  # - minicover instrument
+  - minicover instrument
 
 test_script:
-  - dotnet test --no-restore --no-build
+  - dotnet test --no-restore --no-build --verbosity:q
 
 after_test:
-  - dotnet pack --no-build --include-symbols -c %CONFIGURATION% /p:PackageVersion=%APPVEYOR_BUILD_VERSION%
-  # disable minicover
-  # - minicover uninstrument
-  # - minicover opencoverreport
+  - minicover uninstrument
+  - minicover opencoverreport
   # will fail when the test coverage is lower than the threshold
-  # - minicover report --threshold 90
+  - minicover report --threshold 95
   - ps: 'if (-Not $env:APPVEYOR_PULL_REQUEST_NUMBER) { & dotnet sonarscanner end /d:sonar.login="$env:SONAR_TOKEN" }'
+  - dotnet pack --include-symbols -c %CONFIGURATION% /p:PackageVersion=%APPVEYOR_BUILD_VERSION%
 
 artifacts:
   - path: '**\*.nupkg'
